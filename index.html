@@ -29,7 +29,7 @@
     <!--<script type="text/javascript" src="js/jquery.jplayer.min.js"></script>-->
 
     <script type="text/javascript" src="js/soundmanager2-jsmin.js"></script>
-
+    <script src="js/jquery.shoutcast.min.js"></script>
     <script src="js/chart.js"></script>
 
     <script src="js/simple-slider.js"></script>
@@ -41,11 +41,12 @@
                 // required: path to directory containing SM2 SWF files
                 url: 'lib/soundmanager-swf/',
                 useHighPerformance: true,
+                preferFlash: true,
                 useFastPolling:true,
                 onready: function () {
                     var pregoneraStream = soundManager.createSound({
                         id: 'pregoneraStream',
-                        url: 'http://knight.wavestreamer.com:6366/1/;stream/',
+                        url: 'http://radio.pregonera.net:6366/1/;stream/',
 
                         onplay: function () {
                             soundManager._writeDebug('Starting sound: ' + this.id);
@@ -82,7 +83,14 @@
                 soundManager.play('pregoneraStream');
             });
 
-
+            $.SHOUTcast({
+               host : 'radio.pregonera.net',
+               port : 6366,
+               interval : 5000,
+               stats : function(){
+                  $('#songName').text(this.get('songtitle').toLowerCase());
+               }
+            }).startStats();
 
 
             /*$("#jquery_jplayer_1").jPlayer({
@@ -189,8 +197,13 @@
                             </button>
                             <button class="jp-stop hide" role="button" tabindex="0"><span class="ion-stop"></span>
                             </button>
+                            
                         </div>
+                        
                     </div>
+                    <div class="song-info">
+                            <spam id="songName">Troilo Anibal, Some son some son</spam>
+                        </div>
                 </div>
 
                 <!--<div class="jp-no-solution">

@@ -248,9 +248,20 @@ a:after {
 
 .jp-controls {
     float:right;
+    display: inline-block;
 }
 
 .slider {
     display: inline-block;
     padding-top: 5px;
+}
+
+.song-info {
+    display: inline-block;
+    font-weight: 600;
+    font-size: 1em;
+}
+
+.song-info {
+    
 }
