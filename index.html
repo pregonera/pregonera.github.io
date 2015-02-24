@@ -26,7 +26,10 @@
     <link href="css/main.css" rel="stylesheet">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script type="text/javascript" src="js/jquery.jplayer.min.js"></script>
+    <!--<script type="text/javascript" src="js/jquery.jplayer.min.js"></script>-->
+
+    <script type="text/javascript" src="js/soundmanager2-jsmin.js"></script>
+    <script src="js/jquery.shoutcast.min.js"></script>
     <script src="js/chart.js"></script>
 
     <script src="js/simple-slider.js"></script>
@@ -34,12 +37,68 @@
         //<![CDATA[
         $(document).ready(function () {
 
-            $("#jquery_jplayer_1").jPlayer({
+            soundManager.setup({
+                // required: path to directory containing SM2 SWF files
+                url: 'lib/soundmanager-swf/',
+                useHighPerformance: true,
+                preferFlash: true,
+                useFastPolling:true,
+                onready: function () {
+                    var pregoneraStream = soundManager.createSound({
+                        id: 'pregoneraStream',
+                        url: 'http://radio.pregonera.net:6366/1/;stream/',
+
+                        onplay: function () {
+                            soundManager._writeDebug('Starting sound: ' + this.id);
+                            $(".jp-play").addClass('hide');
+                            $(".jp-stop").removeClass('hide');
+
+                        },
+                        onstop: function () {
+                            soundManager._writeDebug('Starting sound: ' + this.id);
+                            $(".jp-stop").addClass('hide');
+                            $(".jp-play").removeClass('hide');
+
+                        },
+                        autoPlay: true,
+                        autoLoad: true,
+                        stream: true
+                    });
+                }
+            });
+
+
+
+            $("#volume").bind("slider:changed", function (event, data) {
+                //$("#jquery_jplayer_1").jPlayer("volume", data.value);
+                soundManager.setVolume('pregoneraStream', data.value);
+            });
+
+            $(".jp-stop").bind("click", function () {
+                soundManager.stopAll();
+            });
+
+            $(".jp-play").bind("click", function () {
+                soundManager.stopAll();
+                soundManager.play('pregoneraStream');
+            });
+
+            $.SHOUTcast({
+               host : 'radio.pregonera.net',
+               port : 6366,
+               interval : 5000,
+               stats : function(){
+                  $('#songName').text(this.get('songtitle').toLowerCase());
+               }
+            }).startStats();
+
+
+            /*$("#jquery_jplayer_1").jPlayer({
                 ready: function (event) {
                     $(this).jPlayer("setMedia", {
                         title: "Pregonera radio",
-                        mp3: "http://tango.pregonera.net/1/;stream//;"
-                    }).jPlayer("volume", 0.5);//.jPlayer("play");
+                        mp3: "http://radio.pregonera.net:6366/1/;stream//;stream.mp3"
+                    }).jPlayer("volume", 0.5).jPlayer("play");
                 },
                 swfPath: "../../dist/jplayer",
                 supplied: "mp3",
@@ -65,7 +124,7 @@
 
             $("#volume").bind("slider:changed", function (event, data) {
                 $("#jquery_jplayer_1").jPlayer("volume", data.value);
-            });
+            });*/
         });
          //]]>
     </script>
@@ -133,19 +192,24 @@
 
                     <div class="jp-controls-holder">
                         <div class="jp-controls">
-                            <input width="50" id="volume" type="text" data-slider="true" value="0.5" data-slider-range="0,1" data-slider-step="0.05">
+                            <input width="50" id="volume" type="text" data-slider="true" value="50" data-slider-range="0,100" data-slider-step="1">
                             <button class="jp-play" role="button" tabindex="0"><span class="ion-play"></span>
                             </button>
                             <button class="jp-stop hide" role="button" tabindex="0"><span class="ion-stop"></span>
                             </button>
+                            
                         </div>
+                        
                     </div>
+                    <div class="song-info">
+                            <spam id="songName"></spam>
+                        </div>
                 </div>
 
-                <div class="jp-no-solution">
+                <!--<div class="jp-no-solution">
                     <span>Update Required</span>
                     To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
-                </div>
+                </div>-->
             </div>
         </div>
 
